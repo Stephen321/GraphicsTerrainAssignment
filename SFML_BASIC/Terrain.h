@@ -9,17 +9,18 @@ class Terrain
 	float terrWidth,terrDepth;
 
 	typedef  GLfloat vector[3];
-	typedef  GLfloat vector2[2];
+	typedef  GLfloat vector2[2]; //make a new typedef for 2 long array of GLfloats 
 	//array of vertices for the grid(this will be a triangle list)
 	//I know, very inefficient, but let's run before we walk
 	vector *vertices;
-	vector2 *texCoords;
+	vector2 *texCoords; 
 	sf::Color * heightPixels;
 	int heightMapWidth;
-	const float heightScale = 16.f;
+	const float HEIGHT_SCALE = 16.f;
 	float getHeight(int x, int y);
+
 	void setPoint(vector, float, float, float);
-	void setPoint(vector2, float, float);
+	void setPoint(vector2, float, float); //set 2 points 
 	
 public:
 	Terrain(void);

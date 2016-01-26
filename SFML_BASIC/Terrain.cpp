@@ -48,9 +48,9 @@ void Terrain::setPoint(vector2 v2, float u, float v){
 //helper function to calculate height of terrain at a given point in space
 //you will need to modify this significantly to pull height from a map
 float  Terrain::getHeight(int x, int y){
-	float height = ((heightPixels[y + x*heightMapWidth]).r / 255.f) * heightScale;
-	//if (x == heightMapWidth || y == heightMapWidth)
-	//	height = 0;
+	//get the height by getting the red component of colour at the x, y location and dividing by 255.f to get a float 0-1
+	//multiply by const scaler otherwise its too small
+	float height = ((heightPixels[y + x*heightMapWidth]).r / 255.f) * HEIGHT_SCALE;
 	return height;
 }
 
@@ -61,26 +61,28 @@ void Terrain::Init(sf::Image heightMap){
 	delete[] texCoords;
 	texCoords = new vector2[numVerts];
 
+	//get colour of pixels from height map
 	heightMapWidth = heightMap.getSize().x;
 	int heightMapHeight = heightMap.getSize().y;
-	heightPixels = new sf::Color[heightMapWidth * heightMapHeight];
-	for (int x = 0; x < heightMapWidth; x++){
-		for (int y = 0; y < heightMapHeight; y++){
-			int pixelNum = (y + x*heightMapWidth);
-			heightPixels[pixelNum] = heightMap.getPixel(y, x);
-			//std::cout << heightPixels[pixelNum].r << " , " << heightPixels[pixelNum].g << " , " << heightPixels[pixelNum].b << " , " << heightPixels[pixelNum].a << " , " << std::endl;
+	heightPixels = new sf::Color[heightMapWidth * heightMapHeight]; //1D array of sf::Colour which is the length of how many pixels are in the height map
+	for (int y = 0; y < heightMapHeight; y++){ //loop through rows 
+		for (int x = 0; x < heightMapWidth; x++){ //loop through columns
+			int pixelNum = (x + y*heightMapWidth); //get the number of the pixel we are on
+			heightPixels[pixelNum] = heightMap.getPixel(x, y); //get the colour of the pixel at this position
 		}
 	}
 
 	//interpolate along the edges to generate interior points
 	for(int i=0;i<gridWidth;i++){ //iterate left to right
 		for(int j=0;j<gridDepth;j++){//iterate front to back
-			int sqNum=(j+i*gridDepth);
+			int sqNum=(j+i*gridDepth); //get the current square
 			int vertexNum=sqNum*3*2; //6 vertices per square (2 tris)
-			float front=lerp(-terrDepth/2,terrDepth/2,(float)j/gridDepth);
+
+			//get bounds of current square. terrain is drawn around the origin
+			float front=lerp(-terrDepth/2,terrDepth/2,(float)j/gridDepth); 
 			float back =lerp(-terrDepth/2,terrDepth/2,(float)(j+1)/gridDepth);
-			float left=lerp(-terrWidth/2,terrWidth/2,(float)i/gridDepth);
-			float right=lerp(-terrDepth/2,terrDepth/2,(float)(i+1)/gridDepth);
+			float left=lerp(-terrWidth/2,terrWidth/2,(float)i/gridWidth);
+			float right=lerp(-terrWidth/2,terrWidth/2,(float)(i+1)/gridWidth);
 			
 			/*
 			back   +-----+	looking from above, the grid is made up of regular squares
@@ -92,24 +94,27 @@ void Terrain::Init(sf::Image heightMap){
 			front  +-----+
 			     left   right
 				 */
+
+
+			int repeatAmount = 3;
 			//tri1
-			setPoint(texCoords[vertexNum], (float)i / gridWidth, (float)j / gridDepth);
+			setPoint(texCoords[vertexNum], ((float)i / gridWidth) * repeatAmount, ((float)j / gridDepth) * repeatAmount);
 			setPoint(vertices[vertexNum++],left,getHeight(i,j),front);
 
-			setPoint(texCoords[vertexNum], (float)(i + 1) / gridWidth, (float)j / gridDepth);
+			setPoint(texCoords[vertexNum], ((float)(i + 1) / gridWidth) * repeatAmount, ((float)j / gridDepth) * repeatAmount);
 			setPoint(vertices[vertexNum++], right, getHeight((i + 1), j), front);
 
-			setPoint(texCoords[vertexNum], (float)(i + 1) / gridWidth, (float)(j + 1) / gridDepth);
+			setPoint(texCoords[vertexNum], ((float)(i + 1) / gridWidth) * repeatAmount, ((float)(j + 1) / gridDepth) * repeatAmount);
 			setPoint(vertices[vertexNum++], right, getHeight((i + 1), (j + 1)), back);
 
 			//tri2
-			setPoint(texCoords[vertexNum], (float)(i + 1) / gridWidth, (float)(j + 1) / gridDepth);
+			setPoint(texCoords[vertexNum], ((float)(i + 1) / gridWidth) * repeatAmount, ((float)(j + 1) / gridDepth) * repeatAmount);
 			setPoint(vertices[vertexNum++], right, getHeight((i + 1), (j + 1)), back);
 
-			setPoint(texCoords[vertexNum], (float)i / gridWidth, (float)(j + 1) / gridDepth);
+			setPoint(texCoords[vertexNum], ((float)i / gridWidth) * repeatAmount, ((float)(j + 1) / gridDepth) * repeatAmount);
 			setPoint(vertices[vertexNum++], left, getHeight(i, (j + 1)), back);
 
-			setPoint(texCoords[vertexNum], (float)i / gridWidth, (float)j / gridDepth);
+			setPoint(texCoords[vertexNum], ((float)i / gridWidth) * repeatAmount, ((float)j / gridDepth) * repeatAmount);
 			setPoint(vertices[vertexNum++], left, getHeight(i, j), front);
 		}
 	}
@@ -119,13 +124,13 @@ void Terrain::Init(sf::Image heightMap){
 void Terrain::Draw(){
 	glBegin(GL_TRIANGLES);
 	for(int i =0;i<numVerts;i++){
-		glColor3d(1.0, 1.0, 1.0);
-		glTexCoord2fv(texCoords[i]);
+		glColor3d(1.0, 1.0, 1.0); //color all white
+		glTexCoord2fv(texCoords[i]); 
 		glVertex3fv(vertices[i]);
 	}
 	glEnd();
 }
 
 float Terrain::getHeightScale(){
-	return heightScale;
+	return HEIGHT_SCALE;
 }

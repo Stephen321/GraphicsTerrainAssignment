@@ -1,20 +1,25 @@
+//textures
 uniform sampler2D seaTexture;
 uniform sampler2D grassTexture;
 uniform sampler2D rockTexture;
 
+//interpolated height of the fragment
 varying float height;
 
 void main()
 {
-	vec4 colour;
-	vec4 seaColour = texture2D(seaTexture, gl_TexCoord[0].st);
-	vec4 grassColour = texture2D(grassTexture, gl_TexCoord[0].st);
-	vec4 rockColour = texture2D(rockTexture, gl_TexCoord[0].st);
+	vec4 colour; //the final colour
+	//the possible colours
+	vec4 seaColour = texture2D(seaTexture, fract(gl_TexCoord[0].st)); //loop up the colour of the texel at the interpolated tex coord
+	vec4 grassColour = texture2D(grassTexture, fract(gl_TexCoord[0].st));
+	vec4 rockColour = texture2D(rockTexture, fract(gl_TexCoord[0].st));
+	
+	//change colour based on heught
 	if (height >= 0.75){
 		colour = rockColour;
 	}
 	else if (height >= 0.6){ //blend rock and grass
-		colour = mix(rockColour, grassColour, (0.75 - height) / 0.25);
+		colour = mix(rockColour, grassColour, ((0.75 - height) / 0.25) * 1.5); //blend colours depending on height
 	}
 	else if (height >= 0.1){
 		colour = grassColour;
@@ -23,7 +28,9 @@ void main()
 		colour = mix(grassColour, seaColour, (0.1 - height) / 0.05);
 	}
 	else{
-		colour = seaColour;
+		colour = seaColour ;
 	}
+
+	//finally set the colour
 	gl_FragColor = colour;
 }

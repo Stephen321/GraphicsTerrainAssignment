@@ -48,6 +48,12 @@ int main()
     glClearColor(0.3f, 0.3f, 0.6f, 0.f); //background colour
 	glEnable(GL_DEPTH_TEST); 
     glDepthMask(GL_TRUE); 
+
+	//to enable texture tiling
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    
     //// Setup a perspective projection & Camera position 
     glMatrixMode(GL_PROJECTION); 
@@ -57,7 +63,7 @@ int main()
     gluPerspective(90.f, (float)width/height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
  
 
-	//textures
+	//load in different textures
 	sf::Texture seaTexture;
 	seaTexture.loadFromFile("sea.png");
 	sf::Texture grassTexture;
@@ -65,23 +71,24 @@ int main()
 	sf::Texture rockTexture;
 	rockTexture.loadFromFile("rock.png");
 
-	//load & bind the shader
+	//load the shader
 	sf::Shader shader;
 	//all the lighting & texture blending code should  be put in 'fragment.glsl'
 	if(!shader.loadFromFile("vertex.glsl","fragment.glsl")){
         exit(1);
     }
+	//set textures in the shader
 	shader.setParameter("seaTexture", seaTexture);
 	shader.setParameter("grassTexture", grassTexture);
 	shader.setParameter("rockTexture", rockTexture);
-
+	//load the height map image
 	sf::Image heightMap;
 	heightMap.loadFromFile("heightmap.png");
 
 	//Create our Terrain
 	Terrain terrain;
-	terrain.Init(heightMap);
-	shader.setParameter("heightScale", terrain.getHeightScale());
+	terrain.Init(heightMap); //create from height map
+	shader.setParameter("heightScale", terrain.getHeightScale()); //set the height scaler in the shader
 
     // Start game loop 
     while (App.isOpen()) 
@@ -100,15 +107,12 @@ int main()
              
 			//update the camera
 			camera.Update(Event);
- 
-            
-    
         } 
-           
+        
         //Prepare for drawing 
         // Clear color and depth buffer 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		sf::Shader::bind(&shader);
+		sf::Shader::bind(&shader); //shader has to be binded here to allow changing textures
 		//glEnable(GL_TEXTURE_2D);
    
         // Apply some transformations 
