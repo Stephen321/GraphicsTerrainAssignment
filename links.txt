@@ -1,0 +1,4 @@
+http://trederia.blogspot.co.uk/2013/03/further-enhancing-2d-sprites-with-3d.html
+https://github.com/mattdesl/lwjgl-basics/wiki/ShaderLesson6
+http://en.sfml-dev.org/forums/index.php?topic=11939.0
+https://www.reddit.com/r/Unity3D/comments/2bs32u/how_to_texture_a_custom_procedural_terrain_mesh/
