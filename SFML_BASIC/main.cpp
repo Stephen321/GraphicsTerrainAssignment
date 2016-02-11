@@ -144,7 +144,7 @@ int main()
 			//update the camera
 			camera.Update(Event);
         } 
-        
+		glLightfv(GL_LIGHT0, GL_POSITION, light_position);   // set position
         //Prepare for drawing 
         // Clear color and depth buffer 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
