@@ -15,11 +15,11 @@ void main()
 	vec4 rockColour = texture2D(rockTexture, fract(gl_TexCoord[0].st));
 	
 	//change colour based on heught
-	if (height >= 0.75){
+	if (height >= 0.70){
 		colour = rockColour;
 	}
-	else if (height >= 0.6){ //blend rock and grass
-		colour = mix(rockColour, grassColour, ((0.75 - height) / 0.25) * 1.5); //blend colours depending on height
+	else if (height >= 0.5){ //blend rock and grass
+		colour = mix(rockColour, grassColour, (0.70 - height) / 0.2); //blend colours depending on height
 	}
 	else if (height >= 0.1){
 		colour = grassColour;
@@ -32,5 +32,5 @@ void main()
 	}
 
 	//finally set the colour
-	gl_FragColor = colour;
+	gl_FragColor = colour * gl_Color;
 }

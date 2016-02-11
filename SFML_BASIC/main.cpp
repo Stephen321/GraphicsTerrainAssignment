@@ -33,9 +33,16 @@
 int main() 
 { 
     // Create the main window 
-    
+
+	
+
+	bool wireFrame = false;
     int width=600,height=600;
-	sf::RenderWindow App(sf::VideoMode(width, height, 32), "SFML OpenGL"); 
+	sf::ContextSettings Settings;
+	Settings.depthBits = 24; // Request a 24 bits depth buffer
+	Settings.stencilBits = 8;  // Request a 8 bits stencil buffer
+	Settings.antialiasingLevel = 16;  // Request 2 levels of antialiasing
+	sf::RenderWindow App(sf::VideoMode(width, height, 32), "SFML OpenGL", sf::Style::Close, Settings);
     // Create a clock for measuring time elapsed     
     sf::Clock Clock; 
 
@@ -57,6 +64,32 @@ int main()
    
     //// Setup a perspective projection & Camera position 
     glMatrixMode(GL_PROJECTION); 
+
+	glEnable(GL_LIGHTING); // switch on lighting
+	glEnable(GL_LIGHT0); // switch on light0
+
+	GLfloat light_color[] = { 1.0f, 1.0f, 1.0f, 1.0f};
+	GLfloat light_position[] = { 15.0f, 15.0f, 0.0f, 0.0f };
+
+
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color); // set color of diffuse component
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_color); // set color of specular component
+
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);   // set position
+	
+
+	GLfloat materialAmbDiff[] = { 1, 1, 1, 1.0f }; // create an array of RGBA values
+
+
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialAmbDiff);
+	// set the diffuse & ambient reflection colour for the front of faces
+
+	GLfloat materialSpecular[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // create an array of RGBA values (White)
+	GLfloat materialShininess[] = { 40 }; // select value between 0-128, 128=shiniest
+
+
+	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular); // set the colour of specular reflection
+	glMaterialfv(GL_FRONT, GL_SHININESS, materialShininess); // set shininess of the material
     glLoadIdentity(); 
      
     //set up a 3D Perspective View volume
@@ -106,6 +139,9 @@ int main()
                 App.close(); 
              
 			//update the camera
+			if ((Event.type == sf::Event::KeyPressed) && (Event.key.code == sf::Keyboard::I))
+				wireFrame = !wireFrame;
+			//update the camera
 			camera.Update(Event);
         } 
         
@@ -114,6 +150,11 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		sf::Shader::bind(&shader); //shader has to be binded here to allow changing textures
 		//glEnable(GL_TEXTURE_2D);
+
+		if (wireFrame)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
    
         // Apply some transformations 
         //initialise the worldview matrix
@@ -126,9 +167,9 @@ int main()
 
 		//make the world spin
 		//TODO:probably should remove this in final
-		static float ang=0.0;
-		ang+=0.01f;
-		glRotatef(ang*2,0,1,0);//spin about y-axis
+		//static float ang=0.0;
+		//ang+=0.01f;
+		//glRotatef(ang*2,0,1,0);//spin about y-axis
 		
 
 		
