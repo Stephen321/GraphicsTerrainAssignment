@@ -1,5 +1,5 @@
 varying float height; //height of the current vertex
-
+varying vec4 specularLight;
 uniform float heightScale; //constant 
 
 void main()
@@ -41,8 +41,8 @@ void main()
 		NdotHV = max(dot(normal, normalize(gl_LightSource[0].halfVector.xyz)),0.0);
 		specular = gl_FrontMaterial.specular * gl_LightSource[0].specular * pow(NdotHV,gl_FrontMaterial.shininess);
 	}
-	
-	gl_FrontColor = globalAmbient + NdotL * diffuse + ambient + specular;
+	specularLight = specular;
+	gl_FrontColor = globalAmbient + NdotL * diffuse + ambient;
 	
 	gl_Position = ftransform();
 }

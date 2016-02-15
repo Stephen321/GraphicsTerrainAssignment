@@ -5,6 +5,7 @@ uniform sampler2D rockTexture;
 
 //interpolated height of the fragment
 varying float height;
+varying vec4 specularLight;
 
 void main()
 {
@@ -28,7 +29,7 @@ void main()
 		colour = mix(grassColour, seaColour, (0.1 - height) / 0.05);
 	}
 	else{
-		colour = seaColour ;
+		colour = seaColour + specularLight;
 	}
 
 	//finally set the colour

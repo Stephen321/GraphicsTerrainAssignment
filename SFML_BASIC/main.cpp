@@ -55,6 +55,7 @@ int main()
     glClearColor(0.3f, 0.3f, 0.6f, 0.f); //background colour
 	glEnable(GL_DEPTH_TEST); 
     glDepthMask(GL_TRUE); 
+	
 
 	//to enable texture tiling
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -69,7 +70,7 @@ int main()
 	glEnable(GL_LIGHT0); // switch on light0
 
 	GLfloat light_color[] = { 1.0f, 1.0f, 1.0f, 1.0f};
-	GLfloat light_position[] = { 15.0f, 15.0f, 0.0f, 0.0f };
+	GLfloat light_position[] = { 15.0f, 10.0f, -10.0f, 0.0f };
 
 
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color); // set color of diffuse component
@@ -85,7 +86,7 @@ int main()
 	// set the diffuse & ambient reflection colour for the front of faces
 
 	GLfloat materialSpecular[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // create an array of RGBA values (White)
-	GLfloat materialShininess[] = { 40 }; // select value between 0-128, 128=shiniest
+	GLfloat materialShininess[] = { 120 }; // select value between 0-128, 128=shiniest
 
 
 	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular); // set the colour of specular reflection
@@ -159,7 +160,9 @@ int main()
         // Apply some transformations 
         //initialise the worldview matrix
 		glMatrixMode(GL_MODELVIEW); 
-        glLoadIdentity(); 
+        glLoadIdentity();
+
+		glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 
 		//get the viewing transform from the camera
 		camera.ViewingTransform();
