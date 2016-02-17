@@ -70,7 +70,7 @@ int main()
 	glEnable(GL_LIGHT0); // switch on light0
 
 	GLfloat light_color[] = { 1.0f, 1.0f, 1.0f, 1.0f};
-	GLfloat light_position[] = { 15.0f, 10.0f, -10.0f, 0.0f };
+	GLfloat light_position[] = { 15.0f, -20.0f, -10.0f, 0 };
 
 
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color); // set color of diffuse component
@@ -145,7 +145,7 @@ int main()
 			//update the camera
 			camera.Update(Event);
         } 
-		glLightfv(GL_LIGHT0, GL_POSITION, light_position);   // set position
+		
         //Prepare for drawing 
         // Clear color and depth buffer 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -156,11 +156,13 @@ int main()
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-   
+		
+		glLightfv(GL_LIGHT0, GL_POSITION, light_position);   // set position
         // Apply some transformations 
         //initialise the worldview matrix
 		glMatrixMode(GL_MODELVIEW); 
         glLoadIdentity();
+		
 
 		glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 
