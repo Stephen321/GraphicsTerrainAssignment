@@ -14,6 +14,7 @@ class Terrain
 	//I know, very inefficient, but let's run before we walk
 	vector *vertices;
 	vector2 *texCoords; 
+	vector *normals;
 	sf::Color * heightPixels;
 	int heightMapWidth;
 	const float HEIGHT_SCALE = 16.f;
@@ -21,9 +22,12 @@ class Terrain
 
 	void setPoint(vector, float, float, float);
 	void setPoint(vector2, float, float); //set 2 points 
+	void NormalVector(GLfloat p1[3], GLfloat p2[3], GLfloat p3[3], GLfloat n[3]);
+	void AddNormal(int lastIndex, GLfloat n[3]);
 	
 public:
 	Terrain(void);
+	
 	~Terrain(void);
 
 	void Init(sf::Image);

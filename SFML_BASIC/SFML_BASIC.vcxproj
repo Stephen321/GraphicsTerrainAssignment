@@ -42,11 +42,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ASSIMP_SDK)\include;$(SFML_SDK)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ASSIMP_SDK)\include;$(SFML_SDK)\include;$(IncludePath);</IncludePath>
     <LibraryPath>$(SFML_SDK)\lib;$(ASSIMP_SDK)\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(ASSIMP_SDK)\include;$(SFML_SDK)\include;$(IncludePath);</IncludePath>
+    <LibraryPath>$(SFML_SDK)\lib;$(ASSIMP_SDK)\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

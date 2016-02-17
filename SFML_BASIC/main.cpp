@@ -17,51 +17,85 @@
 #endif 
 #pragma comment(lib,"opengl32.lib") 
 #pragma comment(lib,"glu32.lib") 
- 
+
 #include "SFML/Graphics.hpp" 
 #include "SFML/Graphics/Shader.hpp"
 #include "SFML/OpenGL.hpp" 
 #include <iostream> 
-  
- 
+
+
 #include "Terrain.h"
 #include "Camera.h"
 
 
 
 
-int main() 
-{ 
-    // Create the main window 
-    
-    int width=600,height=600;
-	sf::RenderWindow App(sf::VideoMode(width, height, 32), "SFML OpenGL"); 
-    // Create a clock for measuring time elapsed     
-    sf::Clock Clock; 
+int main()
+{
+	// Create the main window 
 
-	aiVector3D position(0,10,-30);
+
+
+	bool wireFrame = false;
+	int width = 600, height = 600;
+	sf::ContextSettings Settings;
+	//Settings.depthBits = 24; // Request a 24 bits depth buffer
+	//Settings.stencilBits = 8;  // Request a 8 bits stencil buffer
+	//Settings.antialiasingLevel = 16;  // Request 2 levels of antialiasing
+	sf::RenderWindow App(sf::VideoMode(width, height, 32), "SFML OpenGL");// , sf::Style::Close, Settings);
+	// Create a clock for measuring time elapsed     
+	sf::Clock Clock;
+
+	aiVector3D position(0, 10, -30);
 	Camera camera;
-    camera.Init(position); //create a camera
-      
-    //prepare OpenGL surface for HSR 
-    glClearDepth(1.f); 
-    glClearColor(0.3f, 0.3f, 0.6f, 0.f); //background colour
-	glEnable(GL_DEPTH_TEST); 
-    glDepthMask(GL_TRUE); 
+	camera.Init(position); //create a camera
+
+	//prepare OpenGL surface for HSR 
+	glClearDepth(1.f);
+	glClearColor(0.3f, 0.3f, 0.6f, 0.f); //background colour
+	glEnable(GL_DEPTH_TEST);
+	glDepthMask(GL_TRUE);
+
 
 	//to enable texture tiling
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-   
-    //// Setup a perspective projection & Camera position 
-    glMatrixMode(GL_PROJECTION); 
-    glLoadIdentity(); 
-     
-    //set up a 3D Perspective View volume
-    gluPerspective(90.f, (float)width/height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
- 
+
+	//// Setup a perspective projection & Camera position 
+	glMatrixMode(GL_PROJECTION);
+
+	glEnable(GL_LIGHTING); // switch on lighting
+	glEnable(GL_LIGHT0); // switch on light0
+
+	GLfloat light_color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	GLfloat light_position[] = { 15.0f, -20.0f, -10.0f, 0 };
+
+
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_color); // set color of diffuse component
+	glLightfv(GL_LIGHT0, GL_SPECULAR, light_color); // set color of specular component
+
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);   // set position
+
+
+	GLfloat materialAmbDiff[] = { 1, 1, 1, 1.0f }; // create an array of RGBA values
+
+
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, materialAmbDiff);
+	// set the diffuse & ambient reflection colour for the front of faces
+
+	GLfloat materialSpecular[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // create an array of RGBA values (White)
+	GLfloat materialShininess[] = { 120 }; // select value between 0-128, 128=shiniest
+
+
+	glMaterialfv(GL_FRONT, GL_SPECULAR, materialSpecular); // set the colour of specular reflection
+	glMaterialfv(GL_FRONT, GL_SHININESS, materialShininess); // set shininess of the material
+	glLoadIdentity();
+
+	//set up a 3D Perspective View volume
+	gluPerspective(90.f, (float)width / height, 1.f, 300.0f);//fov, aspect, zNear, zFar 
+
 
 	//load in different textures
 	sf::Texture seaTexture;
@@ -74,9 +108,9 @@ int main()
 	//load the shader
 	sf::Shader shader;
 	//all the lighting & texture blending code should  be put in 'fragment.glsl'
-	if(!shader.loadFromFile("vertex.glsl","fragment.glsl")){
-        exit(1);
-    }
+	if (!shader.loadFromFile("vertex.glsl", "fragment.glsl")){
+		exit(1);
+	}
 	//set textures in the shader
 	shader.setParameter("seaTexture", seaTexture);
 	shader.setParameter("grassTexture", grassTexture);
@@ -90,35 +124,47 @@ int main()
 	terrain.Init(heightMap); //create from height map
 	shader.setParameter("heightScale", terrain.getHeightScale()); //set the height scaler in the shader
 
-    // Start game loop 
-    while (App.isOpen()) 
-    { 
-        // Process events 
-        sf::Event Event; 
-        while (App.pollEvent(Event)) 
-        { 
-            // Close window : exit 
-            if (Event.type == sf::Event::Closed) 
-                App.close(); 
-   
-            // Escape key : exit 
-            if ((Event.type == sf::Event::KeyPressed) && (Event.key.code == sf::Keyboard::Escape)) 
-                App.close(); 
-             
+	// Start game loop 
+	while (App.isOpen())
+	{
+		// Process events 
+		sf::Event Event;
+		while (App.pollEvent(Event))
+		{
+			// Close window : exit 
+			if (Event.type == sf::Event::Closed)
+				App.close();
+
+			// Escape key : exit 
+			if ((Event.type == sf::Event::KeyPressed) && (Event.key.code == sf::Keyboard::Escape))
+				App.close();
+
+			//update the camera
+			if ((Event.type == sf::Event::KeyPressed) && (Event.key.code == sf::Keyboard::I))
+				wireFrame = !wireFrame;
 			//update the camera
 			camera.Update(Event);
-        } 
-        
-        //Prepare for drawing 
-        // Clear color and depth buffer 
+		}
+
+		//Prepare for drawing 
+		// Clear color and depth buffer 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		sf::Shader::bind(&shader); //shader has to be binded here to allow changing textures
 		//glEnable(GL_TEXTURE_2D);
-   
-        // Apply some transformations 
-        //initialise the worldview matrix
-		glMatrixMode(GL_MODELVIEW); 
-        glLoadIdentity(); 
+
+		if (wireFrame)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glLightfv(GL_LIGHT0, GL_POSITION, light_position);   // set position
+		// Apply some transformations 
+		//initialise the worldview matrix
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+
+		glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
 
 		//get the viewing transform from the camera
 		camera.ViewingTransform();
@@ -126,19 +172,19 @@ int main()
 
 		//make the world spin
 		//TODO:probably should remove this in final
-		static float ang=0.0;
-		ang+=0.01f;
-		glRotatef(ang*2,0,1,0);//spin about y-axis
-		
+		//static float ang=0.0;
+		//ang+=0.01f;
+		//glRotatef(ang*2,0,1,0);//spin about y-axis
 
-		
+
+
 		//draw the world
 		terrain.Draw();
 
-		   
-        // Finally, display rendered frame on screen 
-        App.display(); 
-    } 
-   
-    return EXIT_SUCCESS; 
+
+		// Finally, display rendered frame on screen 
+		App.display();
+	}
+
+	return EXIT_SUCCESS;
 }
