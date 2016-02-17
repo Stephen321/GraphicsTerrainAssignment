@@ -19,7 +19,7 @@ void main()
 
 	vec4 pointEyeSpace=(gl_ModelViewMatrix*gl_Vertex);
 
-	lightDir = normalize(vec3(gl_LightSource[0].position)-pointEyeSpace.xyz);
+	lightDir = normalize(-vec3(gl_LightSource[0].position));w
 
 	NdotL = max(dot(normal, lightDir), 0.0);
 	
