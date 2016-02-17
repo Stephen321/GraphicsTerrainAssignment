@@ -1,3 +1,4 @@
+
 varying float height; //height of the current vertex
 varying vec4 specularLight;
 uniform float heightScale; //constant 
@@ -23,7 +24,7 @@ void main()
 
 	NdotL = max(dot(normal, lightDir), 0.0);
 	
-	vec4 cameraDir=-pointEyeSpace;
+	vec3 cameraDir=-pointEyeSpace.xyz;
 	vec3 halfVector=normalize((lightDir + cameraDir)).xyz;
 	
 	if (NdotL > 0.0) {

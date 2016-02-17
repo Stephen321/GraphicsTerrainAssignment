@@ -75,7 +75,14 @@ public:
 
     void MoveLeftRight(int dir)
 	{ //Dir=+1=>Right, dir=-1=> Left
-		position += xaxis*(forwardSpeed*dir);
+		//get right vector
+		aiVector3D right;
+		right[0] = up[1] * forward[2] - forward[1] * up[2];
+		right[1] = up[2] * forward[0] - forward[2] * up[0];
+		right[2] = up[0] * forward[1] - forward[0] * up[1];
+		right = right.Normalize();
+
+		position += right*(forwardSpeed*dir);
     }
 	void MoveUpDown(int dir)
 	{ //Dir=+1=>Right, dir=-1=> Left
