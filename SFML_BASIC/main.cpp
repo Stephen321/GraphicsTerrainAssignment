@@ -39,10 +39,10 @@ int main()
 	bool wireFrame = false;
 	int width = 600, height = 600;
 	sf::ContextSettings Settings;
-	//Settings.depthBits = 24; // Request a 24 bits depth buffer
-	//Settings.stencilBits = 8;  // Request a 8 bits stencil buffer
-	//Settings.antialiasingLevel = 16;  // Request 2 levels of antialiasing
-	sf::RenderWindow App(sf::VideoMode(width, height, 32), "SFML OpenGL");// , sf::Style::Close, Settings);
+	Settings.depthBits = 24; // Request a 24 bits depth buffer
+	Settings.stencilBits = 8;  // Request a 8 bits stencil buffer
+	Settings.antialiasingLevel = 16;  // Request 2 levels of antialiasing
+	sf::RenderWindow App(sf::VideoMode(width, height, 32), "SFML OpenGL" , sf::Style::Close, Settings);
 	// Create a clock for measuring time elapsed     
 	sf::Clock Clock;
 
