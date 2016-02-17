@@ -11,10 +11,10 @@ void main()
 	gl_FrontColor = gl_Color; //pass the colour along to the next pahse (fragment shader)
 
 	vec3 normal, lightDir;
-	vec4 diffuse, ambient, globalAmbient;
+	vec4 diffuse=vec4(0,0,0,0), ambient=vec4(0,0,0,0), globalAmbient=vec4(0,0,0,0);
 	float NdotL, NdotHV = 0.0f;
 	vec4 specular=vec4(0,0,0,0);
-	diffuse = gl_FrontMaterial.diffuse  * gl_LightSource[0].diffuse;
+	diffuse = vec4(gl_FrontMaterial.diffuse  * gl_LightSource[0].diffuse);
 	normal = normalize(gl_NormalMatrix * gl_Normal);
 
 	vec4 pointEyeSpace=(gl_ModelViewMatrix*gl_Vertex);
@@ -35,7 +35,7 @@ void main()
 				pow(NdotHV,gl_FrontMaterial.shininess);
 	}
 	
-	//specularLight = specular;
+	specularLight = specular;
 	gl_FrontColor = globalAmbient + NdotL * diffuse + ambient;
 	
 	gl_Position = ftransform();
